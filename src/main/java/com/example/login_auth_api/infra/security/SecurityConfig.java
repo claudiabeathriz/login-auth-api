@@ -32,21 +32,23 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
+                        // ✅ AJUSTE TEMPORÁRIO (corrigindo path duplicado)
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
+                        // 🔁 VOLTAR PARA ISSO DEPOIS DE CORRIGIR O CONTROLLER:
+                        // .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        // .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
                         .anyRequest().authenticated()
                 )
+
+                // 🔎 DEBUG (opcional - ajuda a ver o que está bloqueando)
+                // .httpBasic(Customizer.withDefaults())
+
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
     }
 }
